@@ -1,5 +1,6 @@
 from __future__ import print_function, with_statement, division
 import os
+os.system('pip install efficientnet_pytorch')
 from efficientnet_pytorch import EfficientNet
 import torchvision
 import torch
