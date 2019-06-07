@@ -1,5 +1,5 @@
 import torch.optim as optim
-from util import *
+from image_classification.util import *
 from torch.autograd import Variable
 def train(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,patience = None):
     since = time.time()
