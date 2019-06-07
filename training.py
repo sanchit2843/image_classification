@@ -9,7 +9,7 @@ from Earlystopping import EarlyStopping
 from torch import nn
 import time
 
-def train(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,patience = None,device = 'cpu'):
+def train(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,patience = None,device):
     since = time.time()
     best_acc = 0.0
     i = 0
@@ -79,8 +79,11 @@ def test(dataloader):
     sm = nn.Softmax(dim = 1)
     for batch_idx, (data, target) in enumerate(dataloader):
         data, target = Variable(data), Variable(target)
-        data = data.type(torch.cuda.FloatTensor)
-        target = target.type(torch.cuda.LongTensor)
+        data = data.type(torch.FloatTensor)
+        target = target.type(torch.LongTensor)
+        data.to(device)
+        target.to(device)
+        
         classifier.eval()
         output = classifier(data)
         loss = criterion(output, target)
@@ -107,12 +110,13 @@ def test(dataloader):
     print(epoch_acc,epoch_loss)
     return true,pred,image,true_wrong,pred_wrong
 
-def train_model(model,dataloaders,num_epochs=10,lr=0.0001001,batch_size=8,patience = None,classes = None):
+def train_model(model,dataloaders,num_epochs=10,lr=0.0001001,batch_size=8,patience = None,classes = None,device = 'cpu'):
     dataloader_train = {}
     criterion = nn.CrossEntropyLoss()
     losses = list()
     accuracy = list()
     key = dataloaders.keys()
+
     for phase in key:
         if(phase == 'test'):
             perform_test = True
