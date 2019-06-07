@@ -6,6 +6,8 @@ import numpy as np
 import torch
 from util import *
 from Earlystopping import EarlyStopping
+
+
 def train(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,patience = None):
     since = time.time()
     model.to(device)
@@ -105,6 +107,7 @@ def test(dataloader):
 
 def train_model(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,patience = None,classes = None):
     dataloader_train = {}
+    criterion = nn.CrossEntropyLoss()
     losses = list()
     accuracy = list()
     key = dataloaders.keys()

@@ -19,6 +19,7 @@ from lr_finder import LRFinder
 class classifie(nn.Module):
     def __init__(self,model,n_classes,pretrained = True ):
         super(classifie, self).__init__()
+
         if(model == 'efficientnet-b3'):
             if(pretrained == True):
                 self.cnn_arch = EfficientNet.from_pretrained('efficientnet-b3')
