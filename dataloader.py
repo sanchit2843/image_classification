@@ -41,7 +41,7 @@ def data_loader(train_data,test_data = None , valid_size = None,test_size = None
             test_loader = DataLoader(test_data, batch_size= batch_size, sampler=test_sampler)
             train_loader =  DataLoader(train_data, batch_size = batch_size , sampler=valid_sampler)
             dataloaders = {'train':train_loader,'val':valid_loader,'test':test_loader}
-
+            return dataloaders
     if(test_data != None and valid_size!=None):
         data_len = len(test_data)
         indices = list(range(data_len))
