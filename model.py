@@ -19,7 +19,6 @@ from lr_finder import LRFinder
 class classifie(nn.Module):
     def __init__(self,model,n_classes,pretrained = True ):
         super(classifie, self).__init__()
-
         if(model == 'efficientnet-b3'):
             if(pretrained == True):
                 self.cnn_arch = EfficientNet.from_pretrained('efficientnet-b3')
@@ -91,6 +90,7 @@ def classifier(model,n_classes,device = 'cpu',pretrained = True):
     return model
 #find best learning rate
 def lr_finder(model,device):
+    criterion = nn.CrossEntropyLoss()
     optimizer_ft = optim.Adam(model.parameters(), lr=0.0000001)
     lr_finder = LRFinder(model, optimizer_ft, criterion, device=device)
     lr_finder.range_test(train_loader, end_lr=1, num_iter=1000)
