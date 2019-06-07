@@ -36,8 +36,13 @@ def train(model,dataloaders,criterion,device,num_epochs=10,lr=0.00001,batch_size
             j = 0
             for  batch_idx, (data, target) in enumerate(dataloaders[phase]):
                 data, target = Variable(data), Variable(target)
-                data = data.type(torch.FloatTensor)
-                target = target.type(torch.LongTensor)
+                if(device == 'cuda'):
+                    data = data.type(torch.cuda.FloatTensor)
+                    target = target.type(torch.cuda.LongTensor)
+                if(device == 'cpu'):
+                    data = data.type(torch.FloatTensor)
+                    target = target.type(torch.LongTensor)
+
                 data.to(device)
                 target.to(device)
                 optimizer.zero_grad()
@@ -79,8 +84,12 @@ def test(dataloader):
     sm = nn.Softmax(dim = 1)
     for batch_idx, (data, target) in enumerate(dataloader):
         data, target = Variable(data), Variable(target)
-        data = data.type(torch.FloatTensor)
-        target = target.type(torch.LongTensor)
+        if(device == 'cuda'):
+            data = data.type(torch.cuda.FloatTensor)
+            target = target.type(torch.cuda.LongTensor)
+        if(device == 'cpu'):
+            data = data.type(torch.FloatTensor)
+            target = target.type(torch.LongTensor)
         data.to(device)
         target.to(device)
 
