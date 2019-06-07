@@ -50,6 +50,7 @@ def data_loader(train_data,test_data = None , valid_size = None,test_size = None
         valid_idx , test_idx = indices[:split1], indices[split1:]
         valid_sampler = SubsetRandomSampler(valid_idx)
         test_sampler = SubsetRandomSampler(test_idx)
+        train_loader =  DataLoader(train_data, batch_size = batch_size , shuffle = True)
         valid_loader = DataLoader(test_data, batch_size= batch_size, sampler=valid_sampler)
         test_loader = DataLoader(test_data, batch_size= batch_size, sampler=test_sampler)
         dataloaders = {'train':train_loader,'val':valid_loader,'test':test_loader}
