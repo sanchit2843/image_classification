@@ -9,7 +9,7 @@ from Earlystopping import EarlyStopping
 from torch import nn
 import time
 
-def train(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,patience = None,device):
+def train(model,dataloaders,criterion,device,num_epochs=10,lr=0.00001,batch_size=8,patience = None):
     since = time.time()
     best_acc = 0.0
     i = 0
@@ -83,7 +83,7 @@ def test(dataloader):
         target = target.type(torch.LongTensor)
         data.to(device)
         target.to(device)
-        
+
         classifier.eval()
         output = classifier(data)
         loss = criterion(output, target)
@@ -122,7 +122,7 @@ def train_model(model,dataloaders,num_epochs=10,lr=0.0001001,batch_size=8,patien
             perform_test = True
         else:
             dataloader_train.update([(phase,dataloaders[phase])])
-    train(model,dataloader_train,criterion,num_epochs,lr,batch_size,patience)
+    train(model,dataloader_train,criterion,device,num_epochs,lr,batch_size,patience)
     error_plot(losses)
     acc_plot(accuracy)
     if(perform_test == True):
