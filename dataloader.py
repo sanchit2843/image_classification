@@ -6,11 +6,40 @@ from torch.utils.data.dataset import Dataset
 
 #data loader
 
-def data_loader(train_data,test_data = None , valid_size = None , batch_size = 32):
-    train_loader =  DataLoader(train_data, batch_size = batch_size , shuffle = True)
-    if(test_data == None,valid_size == None):
-        return dataloaders = {'train':train_loader}
-    if(test_data !=None and valid_size!=None):
+def data_loader(train_data,test_data = None , valid_size = None,test_size = None , batch_size = 32):
+    if(test_data == None and valid_size == None):
+        train_loader =  DataLoader(train_data, batch_size = batch_size , shuffle = True)
+        dataloaders = {'train':train_loader}
+        return dataloaders
+    if(test_data == None and valid_size!=None):
+        if(test_size==None):
+            data_len = len(train_data)
+            indices = list(range(data_len))
+            np.random.shuffle(indices)
+            split1 = int(np.floor(valid_size * data_len))
+            valid_idx , train_idx = indices[:split1], indices[split1:]
+            valid_sampler = SubsetRandomSampler(valid_idx)
+            train_sampler = SubsetRandomSampler(train_idx)
+            valid_loader = DataLoader(train_data, batch_size= batch_size, sampler=valid_sampler)
+            train_loader =  DataLoader(train_data, batch_size = batch_size , sampler=valid_sampler)
+            dataloaders = {'train':train_loader,'val':valid_loader}
+            return dataloaders
+        if(test_size !=None):
+            data_len = len(test_data)
+            indices = list(range(data_len))
+            np.random.shuffle(indices)
+            split1 = int(np.floor(valid_size * data_len))
+            split2 = int(np.floor(test_size * data_len))
+            valid_idx , test_idx,train_idx = indices[:split1], indices[split1:split1+split2],indices[split1+split2:]
+            valid_sampler = SubsetRandomSampler(valid_idx)
+            test_sampler = SubsetRandomSampler(test_idx)
+            train_sampler = SubsetRandomSampler(train_idx)
+            valid_loader = DataLoader(test_data, batch_size= batch_size, sampler=valid_sampler)
+            test_loader = DataLoader(test_data, batch_size= batch_size, sampler=test_sampler)
+            train_loader =  DataLoader(train_data, batch_size = batch_size , sampler=valid_sampler)
+            dataloaders = {'train':train_loader,'val':valid_loader,'test':test_loader}
+
+    if(test_data != None and valid_size!=None):
         data_len = len(test_data)
         indices = list(range(data_len))
         np.random.shuffle(indices)
@@ -20,17 +49,9 @@ def data_loader(train_data,test_data = None , valid_size = None , batch_size = 3
         test_sampler = SubsetRandomSampler(test_idx)
         valid_loader = DataLoader(test_data, batch_size= batch_size, sampler=valid_sampler)
         test_loader = DataLoader(test_data, batch_size= batch_size, sampler=test_sampler)
-        return dataloaders = {'train':train_loader,'val':valid_loader}
-    if(test_data == None and valid_size!=None):
-        data_len = len(train_data)
-        indices = list(range(data_len))
-        np.random.shuffle(indices)
-        split1 = int(np.floor(valid_size * data_len))
-        valid_idx , test_idx = indices[:split1], indices[split1:]
-        valid_sampler = SubsetRandomSampler(valid_idx)
-        valid_loader = DataLoader(train_data, batch_size= batch_size, sampler=valid_sampler)
-        dataloaders = {'train':train_loader,'val':valid_loader , 'test':test_loader}
+        dataloaders = {'train':train_loader,'val':valid_loader,'test':test_loader}
         return dataloaders
+
 #To calculate mean and standard deviation of the dataset
 #uncomment to calculate mean of dataset and replace in normalize transform
 def normalization_parameter(dataloader):
