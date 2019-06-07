@@ -73,7 +73,7 @@ def train(model,dataloaders,criterion,device,num_epochs=10,lr=0.00001,batch_size
             break
         print('{} Accuracy: '.format(phase),epoch_acc.item())
         return losses,acc
-def test(dataloader):
+def test(dataloader,device):
     running_corrects = 0
     running_loss=0
     pred = []
@@ -135,7 +135,7 @@ def train_model(model,dataloaders,num_epochs=10,lr=0.0001001,batch_size=8,patien
     error_plot(losses)
     acc_plot(accuracy)
     if(perform_test == True):
-        true,pred,image,true_wrong,pred_wrong = test(dataloaders['test'])
+        true,pred,image,true_wrong,pred_wrong = test(dataloaders['test'],device)
         wrong_plot(12,true_wrong,image,pred_wrong,encoder,inv_normalize)
         performance_matrix(true,pred)
         if(classes !=None):
