@@ -1,13 +1,10 @@
 import torch.optim as optim
 
-dataloaders = {'train': train_loader , 'val':valid_loader}
-def train_model(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,patience = None):
+def train(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,patience = None):
     since = time.time()
     model.to(device)
     best_acc = 0.0
     i = 0
-    losses = []
-    accuracy = []
     if(patience!=None):
         earlystop = EarlyStopping(patience = patience,verbose = True)
     for epoch in range(num_epochs):
@@ -17,7 +14,7 @@ def train_model(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=
         if(epoch%10==0):
             lr = 0.0001
 
-        for phase in ['train','val']:
+        for phase in phase1:
             if phase == ' train':
                 model.train()
             else:
@@ -57,4 +54,56 @@ def train_model(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=
             model.load_state_dict(torch.load('./checkpoint.pt'))
             break
         print('{} Accuracy: '.format(phase),epoch_acc.item())
-    return losses,accuracy
+def test(dataloader):
+    running_corrects = 0
+    running_loss=0
+    pred = []
+    true = []
+    pred_wrong = []
+    true_wrong = []
+    image = []
+    sm = nn.Softmax(dim = 1)
+    for batch_idx, (data, target) in enumerate(dataloader):
+        data, target = Variable(data), Variable(target)
+        data = data.type(torch.cuda.FloatTensor)
+        target = target.type(torch.cuda.LongTensor)
+        classifier.eval()
+        output = classifier(data)
+        loss = criterion(output, target)
+        output = sm(output)
+        _, preds = torch.max(output, 1)
+        running_corrects = running_corrects + torch.sum(preds == target.data)
+        running_loss += loss.item() * data.size(0)
+        preds = preds.cpu().numpy()
+        target = target.cpu().numpy()
+        preds = np.reshape(preds,(len(preds),1))
+        target = np.reshape(target,(len(preds),1))
+        data = data.cpu().numpy()
+
+        for i in range(len(preds)):
+            pred.append(preds[i])
+            true.append(target[i])
+            if(preds[i]!=target[i]):
+                pred_wrong.append(preds[i])
+                true_wrong.append(target[i])
+                image.append(data[i])
+
+    epoch_acc = running_corrects.double()/(len(dataloader)*batch_size)
+    epoch_loss = running_loss/(len(dataloader)*batch_size)
+    print(epoch_acc,epoch_loss)
+    return true,pred,image,true_wrong,pred_wrong
+
+def train_model(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,patience = None):
+    dataloader_train = {}
+    losses = list()
+    accuracy = list()
+    key = dataloaders.keys()
+    for phase in key:
+        if(phase == 'test'):
+            perform_test = True
+        else:
+            dataloader_train.update([(phase,dataloaders[phase])])
+    train(model,dataloader_train,criterion,num_epochs,lr,batch_size,patience)
+    if(perform_test == True):
+        true,pred,image,true_wrong,pred_wrong = test(dataloaders['test'])
+        return true,pred,image,true_wrong,pred_wrong
