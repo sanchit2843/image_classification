@@ -4,69 +4,44 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
 
-#If the data is divided into different folders
-#image transformations for train and test data
-im_size = 150
-train_transforms = transforms.Compose([
-                                        transforms.Resize((im_size,im_size)),
-                                        transforms.RandomResizedCrop(size=315, scale=(0.95, 1.0)),
-                                        transforms.RandomRotation(degrees=10),
-                                        transforms.RandomHorizontalFlip(),
-                                        transforms.CenterCrop(size=299),  # Image net standards
-                                        transforms.ToTensor(),
-                                        transforms.Normalize((0.4302, 0.4575, 0.4539), (0.2361, 0.2347, 0.2432))])
-test_transforms = transforms.Compose([
-                                        transforms.Resize((im_size,im_size)),
-                                        transforms.ToTensor(),
-                                        transforms.Normalize((0.4302, 0.4575, 0.4539), (0.2361, 0.2347, 0.2432))])
+#data loader
 
-#inverse normalization for image plot
-
-inv_normalize =  transforms.Normalize(
-    mean=[-0.4302/0.2361, -0.4575/0.2347, -0.4539/0.2432],
-    std=[1/0.2361, 1/0.2347, 1/0.2432]
-)
+def data_loader(train_data,test_data = None , valid_size = None , batch_size = 32):
+    train_loader =  DataLoader(train_data, batch_size = batch_size , shuffle = True)
+    if(test_data == None,valid_size == None):
+        return dataloaders = {'train':train_loader}
+    if(test_data !=None and valid_size!=None):
+        data_len = len(test_data)
+        indices = list(range(data_len))
+        np.random.shuffle(indices)
+        split1 = int(np.floor(valid_size * data_len))
+        valid_idx , test_idx = indices[:split1], indices[split1:]
+        valid_sampler = SubsetRandomSampler(valid_idx)
+        test_sampler = SubsetRandomSampler(test_idx)
+        valid_loader = DataLoader(test_data, batch_size= batch_size, sampler=valid_sampler)
+        test_loader = DataLoader(test_data, batch_size= batch_size, sampler=test_sampler)
+        return dataloaders = {'train':train_loader,'val':valid_loader}
+    if(test_data == None and valid_size!=None):
+        data_len = len(train_data)
+        indices = list(range(data_len))
+        np.random.shuffle(indices)
+        split1 = int(np.floor(valid_size * data_len))
+        valid_idx , test_idx = indices[:split1], indices[split1:]
+        valid_sampler = SubsetRandomSampler(valid_idx)
+        valid_loader = DataLoader(train_data, batch_size= batch_size, sampler=valid_sampler)
+        dataloaders = {'train':train_loader,'val':valid_loader , 'test':test_loader}
+        return dataloaders
 #To calculate mean and standard deviation of the dataset
 #uncomment to calculate mean of dataset and replace in normalize transform
-'''mean = 0.
-std = 0.
-nb_samples = len(data)
-for data,_ in dataloader:
-    batch_samples = data.size(0)
-    data = data.view(batch_samples, data.size(1), -1)
-    mean += data.mean(2).sum(0)
-    std += data.std(2).sum(0)
-mean /= nb_samples
-std /= nb_samples'''
-#This is template in case the images are not divided into folders and csv file with names and classes are given
-'''
-im_size = 150
-class datagen(Dataset):
-  def __init__(self,direc,labels,transform = None):
-    self.dir = direc
-    self.labels = labels
-    self.transform = transform
-  def __len__(self):
-    return (len(self.dir))
-
-  def __getitem__(self,idx):
-    path = self.dir[idx]
-    image = cv2.imread(path)
-    if self.transform:
-      image = self.transform(image)
-    label = self.labels[idx]
-    return image,label
-transform = transforms.Compose([transforms.ToPILImage(),
-                                transforms.Resize((im_size,im_size)),
-                                transforms.RandomHorizontalFlip(p=0.5),
-                                transforms.RandomVerticalFlip(p=0.5),
-                                transforms.RandomRotation(45),
-                                transforms.ToTensor(),
-                                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-                    ])
-datagen_object = datagen(direc1, label,transform)
-train_loader = DataLoader(datagen_object, batch_size=32)
-inv_normalize =  transforms.Normalize(mean=[-1, -1, -1],
-    std=[2, 2, 2]
-)
-'''
+def normalization_parameter(dataloader):
+    mean = 0.
+    std = 0.
+    nb_samples = len(data)
+    for data,_ in dataloader:
+        batch_samples = data.size(0)
+        data = data.view(batch_samples, data.size(1), -1)
+        mean += data.mean(2).sum(0)
+        std += data.std(2).sum(0)
+    mean /= nb_samples
+    std /= nb_samples
+    return mean,std
