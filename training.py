@@ -9,9 +9,8 @@ from Earlystopping import EarlyStopping
 from torch import nn
 import time
 
-def train(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,patience = None):
+def train(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,patience = None,device = 'cpu'):
     since = time.time()
-    model.to(device)
     best_acc = 0.0
     i = 0
     phase1 = dataloaders.keys()
@@ -37,8 +36,10 @@ def train(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,pati
             j = 0
             for  batch_idx, (data, target) in enumerate(dataloaders[phase]):
                 data, target = Variable(data), Variable(target)
-                data = data.type(torch.cuda.FloatTensor)
-                target = target.type(torch.cuda.LongTensor)
+                data = data.type(torch.FloatTensor)
+                target = target.type(torch.LongTensor)
+                data.to(device)
+                target.to(device)
                 optimizer.zero_grad()
                 output = model(data)
                 loss = criterion(output, target)
