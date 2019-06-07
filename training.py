@@ -1,11 +1,14 @@
 import torch.optim as optim
-from utils import *
+from util import *
 from torch.autograd import Variable
 def train(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,patience = None):
     since = time.time()
     model.to(device)
     best_acc = 0.0
     i = 0
+    phase1 = dataloaders.keys()
+    losses = list()
+    acc = list()
     if(patience!=None):
         earlystop = EarlyStopping(patience = patience,verbose = True)
     for epoch in range(num_epochs):
@@ -49,12 +52,13 @@ def train(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,pati
 
             if(phase == 'train'):
                 losses.append(epoch_loss)
-                accuracy.append(epoch_acc)
+                acc.append(epoch_acc)
         if(earlystop.early_stop):
             print("Early stopping")
             model.load_state_dict(torch.load('./checkpoint.pt'))
             break
         print('{} Accuracy: '.format(phase),epoch_acc.item())
+        return losses,acc
 def test(dataloader):
     running_corrects = 0
     running_loss=0

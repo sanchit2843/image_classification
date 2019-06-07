@@ -6,7 +6,6 @@ from torch.utils.data.dataset import Dataset
 import os
 from tqdm.autonotebook import tqdm
 
-os.system('pip install -r requirements.txt')
 #data loader
 
 def data_loader(train_data,test_data = None , valid_size = None,test_size = None , batch_size = 32):
