@@ -1,5 +1,6 @@
 import torch.optim as optim
-from utils import wrong_plot,performance_matrix,acc_plot,error_plot,plot_confusion_matrix
+from utils import *
+from torch.autograd import Variable
 def train(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,patience = None):
     since = time.time()
     model.to(device)
@@ -46,7 +47,7 @@ def train(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,pati
             if(phase == 'val'):
                 earlystop(epoch_loss,model)
 
-            if(phase == 'Train'):
+            if(phase == 'train'):
                 losses.append(epoch_loss)
                 accuracy.append(epoch_acc)
         if(earlystop.early_stop):

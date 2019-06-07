@@ -3,7 +3,10 @@ import torchvision
 from torchvision import transforms
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
+import os
+from tqdm.autonotebook import tqdm
 
+os.system('pip install -r requirements.txt')
 #data loader
 
 def data_loader(train_data,test_data = None , valid_size = None,test_size = None , batch_size = 32):
@@ -58,7 +61,7 @@ def normalization_parameter(dataloader):
     mean = 0.
     std = 0.
     nb_samples = len(data)
-    for data,_ in dataloader:
+    for data,_ in tqdm(dataloader):
         batch_samples = data.size(0)
         data = data.view(batch_samples, data.size(1), -1)
         mean += data.mean(2).sum(0)

@@ -8,9 +8,9 @@ import torchvision.models as models
 from torchsummary import summary
 import torch.optim as optim
 
-from lib.lr_finder import LRFinder
-class classifier(nn.Module):
-    def __init__(self,model,pretrained = True , n_classes):
+from lr_finder import LRFinder
+class classifie(nn.Module):
+    def __init__(self,model,n_classes,pretrained = True ):
         super(classifier, self).__init__()
         if(model == 'efficientnet-b3'):
             if(pretrained == True):
@@ -77,10 +77,10 @@ class classifier(nn.Module):
         x = self.dropout(self.relu(self.linear1(am)))
         x = self.linear2(x)
         return x
-model = classifier()
-model.to(device)
-criterion = nn.CrossEntropyLoss()
-
+def classifier(model,n_classes,device = 'cpu',pretrained = True):
+    model = classifie(model,n_classes,pretrained)
+    model.to(device)
+    return model
 #find best learning rate
 def lr_finder(model,device):
     optimizer_ft = optim.Adam(model.parameters(), lr=0.0000001)

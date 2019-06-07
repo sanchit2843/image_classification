@@ -101,3 +101,17 @@ def performance_matrix(true,pred):
     accuracy = metrics.accuracy_score(true,pred)
     f1_score = metrics.f1_score(true,pred,average='macro')
     print('Precision: {} Recall: {}, Accuracy: {}: ,f1_score: {}'.format(precision*100,recall*100,accuracy*100,f1_score*100))
+def error_plot(loss):
+    plt.figure(figsize=(10,5))
+    plt.plot(loss)
+    plt.title("Training loss plot")
+    plt.xlabel("epochs")
+    plt.ylabel("Loss")
+    plt.show()
+def acc_plot(acc):
+    plt.figure(figsize=(10,5))
+    plt.plot(acc)
+    plt.title("Training accuracy plot")
+    plt.xlabel("epochs")
+    plt.ylabel("accuracy")
+    plt.show()
