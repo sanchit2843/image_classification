@@ -1,5 +1,5 @@
 import torch.optim as optim
-
+from utils import wrong_plot,performance_matrix,acc_plot,error_plot,plot_confusion_matrix
 def train(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,patience = None):
     since = time.time()
     model.to(device)
@@ -93,7 +93,7 @@ def test(dataloader):
     print(epoch_acc,epoch_loss)
     return true,pred,image,true_wrong,pred_wrong
 
-def train_model(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,patience = None):
+def train_model(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,patience = None,classes = None):
     dataloader_train = {}
     losses = list()
     accuracy = list()
@@ -104,6 +104,11 @@ def train_model(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=
         else:
             dataloader_train.update([(phase,dataloaders[phase])])
     train(model,dataloader_train,criterion,num_epochs,lr,batch_size,patience)
+    error_plot(losses)
+    acc_plot(accuracy)
     if(perform_test == True):
         true,pred,image,true_wrong,pred_wrong = test(dataloaders['test'])
-        return true,pred,image,true_wrong,pred_wrong
+        wrong_plot(12,true_wrong,image,pred_wrong,encoder,inv_normalize)
+        performance_matrix(true,pred)
+        if(classes !=None):
+            plot_confusion_matrix(true, pred, classes= classes,title='Confusion matrix, without normalization')
