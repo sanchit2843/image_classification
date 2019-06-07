@@ -108,7 +108,7 @@ def train_model(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=
             perform_test = True
         else:
             dataloader_train.update([(phase,dataloaders[phase])])
-    losses,accuracy = train(model,dataloader_train,criterion,num_epochs,lr,batch_size,patience)
+    train(model,dataloader_train,criterion,num_epochs,lr,batch_size,patience)
     error_plot(losses)
     acc_plot(accuracy)
     if(perform_test == True):

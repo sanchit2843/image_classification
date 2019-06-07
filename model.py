@@ -1,6 +1,6 @@
 #pip install EfficientNet
 import os
-os.system('pip install efficientnet_pytorch')
+
 from efficientnet_pytorch import EfficientNet
 import torchvision
 import torch
