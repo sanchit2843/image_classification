@@ -7,6 +7,7 @@ import torch
 from util import *
 from Earlystopping import EarlyStopping
 from torch import nn
+import time
 
 def train(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,patience = None):
     since = time.time()
