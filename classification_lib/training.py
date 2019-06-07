@@ -44,7 +44,7 @@ def train(model,dataloaders,criterion,num_epochs=10,lr=0.00001,batch_size=8,pati
             epoch_acc = running_corrects.double()/(len(dataloaders[phase])*batch_size)
             epoch_loss = running_loss/(len(dataloaders[phase])*batch_size)
             if(phase == 'val'):
-                earlystop(epoch_acc,model)
+                earlystop(epoch_loss,model)
 
             if(phase == 'Train'):
                 losses.append(epoch_loss)
