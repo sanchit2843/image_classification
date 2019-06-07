@@ -1,6 +1,5 @@
-#pip install EfficientNet
+from __future__ import print_function, with_statement, division
 import os
-
 from efficientnet_pytorch import EfficientNet
 import torchvision
 import torch
@@ -10,7 +9,6 @@ import torchvision.models as models
 from torchsummary import summary
 import torch.optim as optim
 
-from __future__ import print_function, with_statement, division
 import copy
 import os
 import torch
