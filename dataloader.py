@@ -59,7 +59,7 @@ def data_loader(train_data,test_data = None , valid_size = None,test_size = None
 def normalization_parameter(dataloader):
     mean = 0.
     std = 0.
-    nb_samples = len(data)
+    nb_samples = len(dataloader.dataset)
     for data,_ in tqdm(dataloader):
         batch_samples = data.size(0)
         data = data.view(batch_samples, data.size(1), -1)
