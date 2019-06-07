@@ -26,8 +26,18 @@ inv_normalize =  transforms.Normalize(
     mean=[-0.4302/0.2361, -0.4575/0.2347, -0.4539/0.2432],
     std=[1/0.2361, 1/0.2347, 1/0.2432]
 )
-
-
+#To calculate mean and standard deviation of the dataset
+#uncomment to calculate mean of dataset and replace in normalize transform
+'''mean = 0.
+std = 0.
+nb_samples = len(data)
+for data,_ in dataloader:
+    batch_samples = data.size(0)
+    data = data.view(batch_samples, data.size(1), -1)
+    mean += data.mean(2).sum(0)
+    std += data.std(2).sum(0)
+mean /= nb_samples
+std /= nb_samples'''
 #This is template in case the images are not divided into folders and csv file with names and classes are given
 '''
 im_size = 150
