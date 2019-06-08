@@ -103,7 +103,7 @@ def test(model,dataloader,device,batch_size):
     print(epoch_acc,epoch_loss)
     return true,pred,image,true_wrong,pred_wrong
 
-def train_model(model,dataloaders,encoder,num_epochs=10,lr=0.0001,batch_size=8,patience = None,classes = None,device = 'cpu'):
+def train_model(model,dataloaders,encoder,inv_normalize = None,num_epochs=10,lr=0.0001,batch_size=8,patience = None,classes = None,device = 'cpu'):
     dataloader_train = {}
     losses = list()
     accuracy = list()
