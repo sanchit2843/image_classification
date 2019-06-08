@@ -4,15 +4,17 @@ from PIL import Image
 import numpy as np
 import torch
 from sklearn import metrics
+
 def prediction_bar(output,encoder):
     output = output.cpu().detach().numpy()
     a = output.argsort()
-    size = len(a)
-    if(a>5):
-        a = np.flip(a[:,-5:])
-    else:
-        a = np.flip(a[:,-1*size:])
     a = a[0]
+
+    size = len(a)
+    if(size>5):
+        a = np.flip(a[-5:])
+    else:
+        a = np.flip(a[-1*size:])
     prediction = list()
     clas = list()
     for i in a:
@@ -20,8 +22,10 @@ def prediction_bar(output,encoder):
       clas.append(str(i))
     for i in a:
         print('Class: {} , confidence: {}'.format(encoder[int(i)],float(output[:,i]*100)))
-
     plt.bar(clas,prediction)
+    plt.title("Confidence score bar graph")
+    plt.xlabel("Confidence score")
+    plt.ylabel("Class number")
 
 def img_plot(image,inv_normalize = None):
     if(inv_normalize!=None):
