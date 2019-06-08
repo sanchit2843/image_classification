@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import random
 from PIL import Image
 import numpy as np
-
+import torch
 def prediction_bar(output,encoder):
     output = output.cpu().detach().numpy()
     a = output.argsort()
