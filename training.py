@@ -12,7 +12,6 @@ def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
     best_acc = 0.0
     i = 0
     phase1 = dataloaders.keys()
-    print(num_epochs)
     losses = list()
     criterion = nn.CrossEntropyLoss()
     acc = list()
