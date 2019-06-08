@@ -3,6 +3,7 @@ import random
 from PIL import Image
 import numpy as np
 import torch
+from sklearn import metrics
 def prediction_bar(output,encoder):
     output = output.cpu().detach().numpy()
     a = output.argsort()
