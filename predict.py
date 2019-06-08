@@ -1,8 +1,10 @@
 import torch
 from torch.autograd import Variable
 from torchvision import transforms
-from util import img_plot
+from util import img_plot,prediction_bar
 import numpy as np
+from PIL import Image
+from torch import nn
 def predict(model,image,device,encoder,transforms = None,inv_normalize = None):
     #model = torch.load('./model.h5')
     model.eval()
