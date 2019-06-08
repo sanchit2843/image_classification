@@ -9,22 +9,41 @@ from Earlystopping import EarlyStopping
 from torch import nn
 import time
 
-def train(model,dataloaders,criterion,device,num_epochs=10,lr=0.00001,batch_size=8,patience = None):
+import torch.optim as optim
+import matplotlib.pyplot as plt
+import random
+from torch.autograd import Variable
+import numpy as np
+import torch
+from util import *
+from Earlystopping import EarlyStopping
+from torch import nn
+import time
+import torch.optim as optim
+import matplotlib.pyplot as plt
+import random
+from torch.autograd import Variable
+import numpy as np
+import torch
+from util import *
+from Earlystopping import EarlyStopping
+from torch import nn
+import time
+
+def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
     since = time.time()
     best_acc = 0.0
     i = 0
     phase1 = dataloaders.keys()
+    print(num_epochs)
     losses = list()
+    criterion = nn.CrossEntropyLoss()
     acc = list()
     if(patience!=None):
         earlystop = EarlyStopping(patience = patience,verbose = True)
     for epoch in range(num_epochs):
         print('Epoch:',epoch)
         optimizer = optim.Adam(model.parameters(), lr=lr)
-        lr = lr*0.8
-        if(epoch%10==0):
-            lr = 0.0001
-
         for phase in phase1:
             if phase == ' train':
                 model.train()
@@ -56,24 +75,24 @@ def train(model,dataloaders,criterion,device,num_epochs=10,lr=0.00001,batch_size
                     loss.backward()
                     optimizer.step()
 
-                if batch_idx % 300 == 0:
+                if batch_idx % 100 == 0:
                     print('{} Epoch: {}  [{}/{} ({:.0f}%)]\tLoss: {:.6f} \tAcc: {:.6f}'.format(phase,epoch, batch_idx * len(data), len(dataloaders[phase].dataset),100. * batch_idx / len(dataloaders[phase])
                                                                                                  , running_loss/(j*batch_size),running_corrects.double()/(j*batch_size)))
             epoch_acc = running_corrects.double()/(len(dataloaders[phase])*batch_size)
             epoch_loss = running_loss/(len(dataloaders[phase])*batch_size)
             if(phase == 'val'):
                 earlystop(epoch_loss,model)
-
             if(phase == 'train'):
                 losses.append(epoch_loss)
                 acc.append(epoch_acc)
         if(earlystop.early_stop):
             print("Early stopping")
             model.load_state_dict(torch.load('./checkpoint.pt'))
+            print('{} Accuracy: {}, Time to train: {}'.format(phase,epoch_acc.item(),since))
             break
-        print('{} Accuracy: '.format(phase),epoch_acc.item())
-        return losses,acc
-def test(dataloader,device):
+        print('{} Accuracy: {}, Time to train: {}'.format(phase,epoch_acc.item(),since))
+    return losses,acc
+def test(model,dataloader,device):
     running_corrects = 0
     running_loss=0
     pred = []
@@ -82,6 +101,8 @@ def test(dataloader,device):
     true_wrong = []
     image = []
     sm = nn.Softmax(dim = 1)
+    criterion = nn.CrossEntropyLoss()
+
     for batch_idx, (data, target) in enumerate(dataloader):
         data, target = Variable(data), Variable(target)
         if(device == 'cuda'):
@@ -93,8 +114,8 @@ def test(dataloader,device):
         data.to(device)
         target.to(device)
 
-        classifier.eval()
-        output = classifier(data)
+        model.eval()
+        output = model(data)
         loss = criterion(output, target)
         output = sm(output)
         _, preds = torch.max(output, 1)
@@ -119,23 +140,22 @@ def test(dataloader,device):
     print(epoch_acc,epoch_loss)
     return true,pred,image,true_wrong,pred_wrong
 
-def train_model(model,dataloaders,num_epochs=10,lr=0.0001001,batch_size=8,patience = None,classes = None,device = 'cpu'):
+def train_model(model,dataloaders,num_epochs=10,lr=0.0001,batch_size=8,patience = None,classes = None,device = 'cpu'):
     dataloader_train = {}
-    criterion = nn.CrossEntropyLoss()
     losses = list()
     accuracy = list()
     key = dataloaders.keys()
-
+    perform_test = False
     for phase in key:
         if(phase == 'test'):
             perform_test = True
         else:
             dataloader_train.update([(phase,dataloaders[phase])])
-    losses,accuracy = train(model,dataloader_train,criterion,device,num_epochs,lr,batch_size,patience)
+    losses,accuracy = train(model,dataloader_train,device,num_epochs,lr,batch_size,patience)
     error_plot(losses)
     acc_plot(accuracy)
     if(perform_test == True):
-        true,pred,image,true_wrong,pred_wrong = test(dataloaders['test'],device)
+        true,pred,image,true_wrong,pred_wrong = test(model,dataloaders['test'],device)
         wrong_plot(12,true_wrong,image,pred_wrong,encoder,inv_normalize)
         performance_matrix(true,pred)
         if(classes !=None):
