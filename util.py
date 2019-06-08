@@ -1,7 +1,30 @@
 import matplotlib.pyplot as plt
 import random
+
+
+def prediction_bar(output,encoder):
+    output = output.cpu().detach().numpy()
+    a = output.argsort()
+    a = a[:,-5:]
+    a = np.flip(a[:,-5:])
+    a = a[0]
+    prediction = list()
+    clas = list()
+    for i in a:
+      prediction.append(float(output[:,i]*100))
+      clas.append(str(i))
+    for i in a:
+        print('Class: {} , confidence: {}'.format(encoder[int(i)],float(output[:,i]*100)))
+    
+    plt.bar(clas,prediction)
+
+def img_plot(image,inv_normalize = None):
+    if(inv_normalize!=None):
+        image = inv_normalize(image)
+    image = image.cpu().numpy().transpose(1,2,0)
+    plt.imshow(image)
 #plotting rondom images from dataset
-def class_plot(n_figures , data , encoder ,inv_normalize = None):
+def class_plot(data , encoder ,inv_normalize = None,n_figures = 12):
     n_row = int(n_figures/3)
     fig,axes = plt.subplots(figsize=(14, 10), nrows = n_row, ncols=3)
     for ax in axes.flatten():

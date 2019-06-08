@@ -7,28 +7,6 @@ import torch
 from util import *
 from Earlystopping import EarlyStopping
 from torch import nn
-import time
-
-import torch.optim as optim
-import matplotlib.pyplot as plt
-import random
-from torch.autograd import Variable
-import numpy as np
-import torch
-from util import *
-from Earlystopping import EarlyStopping
-from torch import nn
-import time
-import torch.optim as optim
-import matplotlib.pyplot as plt
-import random
-from torch.autograd import Variable
-import numpy as np
-import torch
-from util import *
-from Earlystopping import EarlyStopping
-from torch import nn
-import time
 
 def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
     best_acc = 0.0
@@ -54,15 +32,9 @@ def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
             j = 0
             for  batch_idx, (data, target) in enumerate(dataloaders[phase]):
                 data, target = Variable(data), Variable(target)
-                if(device == 'cuda'):
-                    data = data.type(torch.cuda.FloatTensor)
-                    target = target.type(torch.cuda.LongTensor)
-                if(device == 'cpu'):
-                    data = data.type(torch.FloatTensor)
-                    target = target.type(torch.LongTensor)
+                data = data.type(torch.FloatTensor).to(device)
+                target = target.type(torch.LongTensor).to(device)
 
-                data.to(device)
-                target.to(device)
                 optimizer.zero_grad()
                 output = model(data)
                 loss = criterion(output, target)
@@ -104,15 +76,8 @@ def test(model,dataloader,device):
 
     for batch_idx, (data, target) in enumerate(dataloader):
         data, target = Variable(data), Variable(target)
-        if(device == 'cuda'):
-            data = data.type(torch.cuda.FloatTensor)
-            target = target.type(torch.cuda.LongTensor)
-        if(device == 'cpu'):
-            data = data.type(torch.FloatTensor)
-            target = target.type(torch.LongTensor)
-        data.to(device)
-        target.to(device)
-
+        data = data.type(torch.FloatTensor).to(device)
+        target = target.type(torch.LongTensor).to(device)
         model.eval()
         output = model(data)
         loss = criterion(output, target)
@@ -153,6 +118,8 @@ def train_model(model,dataloaders,num_epochs=10,lr=0.0001,batch_size=8,patience 
     losses,accuracy = train(model,dataloader_train,device,num_epochs,lr,batch_size,patience)
     error_plot(losses)
     acc_plot(accuracy)
+    if(patience ==None):
+        torch.save(model,'./model.h5')
     if(perform_test == True):
         true,pred,image,true_wrong,pred_wrong = test(model,dataloaders['test'],device)
         wrong_plot(12,true_wrong,image,pred_wrong,encoder,inv_normalize)

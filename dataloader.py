@@ -7,16 +7,17 @@ import os
 from tqdm.autonotebook import tqdm
 import numpy as np
 from torch.utils.data.sampler import SubsetRandomSampler
+from util import class_plot
 #data loader
 
-def data_loader(train_data,test_data = None , valid_size = None,test_size = None , batch_size = 32):
+def data_loader(train_data,encoder,test_data = None , valid_size = None,test_size = None , batch_size = 32,inv_normalize = None):
+    class_plot(train_data,encoder,inv_normalize)
     if(test_data == None and valid_size == None):
         train_loader =  DataLoader(train_data, batch_size = batch_size , shuffle = True)
         dataloaders = {'train':train_loader}
         return dataloaders
     if(test_data == None and valid_size!=None):
         if(test_size==None):
-            data_len = len(train_data)
             indices = list(range(data_len))
             np.random.shuffle(indices)
             split1 = int(np.floor(valid_size * data_len))
@@ -50,10 +51,10 @@ def data_loader(train_data,test_data = None , valid_size = None,test_size = None
         valid_idx , test_idx = indices[:split1], indices[split1:]
         valid_sampler = SubsetRandomSampler(valid_idx)
         test_sampler = SubsetRandomSampler(test_idx)
-
         valid_loader = DataLoader(test_data, batch_size= batch_size, sampler=valid_sampler)
         test_loader = DataLoader(test_data, batch_size= batch_size, sampler=test_sampler)
         train_loader =  DataLoader(train_data, batch_size = batch_size , shuffle = True)
+
         dataloaders = {'train':train_loader,'val':valid_loader,'test':test_loader}
         return dataloaders
 
