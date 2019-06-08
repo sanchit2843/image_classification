@@ -31,7 +31,6 @@ from torch import nn
 import time
 
 def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
-    since = time.time()
     best_acc = 0.0
     i = 0
     phase1 = dataloaders.keys()
@@ -88,9 +87,9 @@ def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
         if(earlystop.early_stop):
             print("Early stopping")
             model.load_state_dict(torch.load('./checkpoint.pt'))
-            print('{} Accuracy: {}, Time to train: {}'.format(phase,epoch_acc.item(),since))
+            print('{} Accuracy: {}'.format(phase,epoch_acc.item()))
             break
-        print('{} Accuracy: {}, Time to train: {}'.format(phase,epoch_acc.item(),since))
+        print('{} Accuracy: {}'.format(phase,epoch_acc.item()))
     return losses,acc
 def test(model,dataloader,device):
     running_corrects = 0
