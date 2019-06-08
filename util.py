@@ -5,8 +5,11 @@ import random
 def prediction_bar(output,encoder):
     output = output.cpu().detach().numpy()
     a = output.argsort()
-    a = a[:,-5:]
-    a = np.flip(a[:,-5:])
+    size = len(a)
+    if(a>5):
+        a = np.flip(a[:,-5:])
+    else:
+        a = np.flip(a[:,-1*size:])
     a = a[0]
     prediction = list()
     clas = list()
@@ -15,7 +18,7 @@ def prediction_bar(output,encoder):
       clas.append(str(i))
     for i in a:
         print('Class: {} , confidence: {}'.format(encoder[int(i)],float(output[:,i]*100)))
-    
+
     plt.bar(clas,prediction)
 
 def img_plot(image,inv_normalize = None):
