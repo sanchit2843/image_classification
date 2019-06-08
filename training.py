@@ -62,7 +62,7 @@ def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
             break
         print('{} Accuracy: {}'.format(phase,epoch_acc.item()))
     return losses,acc
-def test(model,dataloader,device):
+def test(model,dataloader,device,batch_size):
     running_corrects = 0
     running_loss=0
     pred = []
@@ -120,7 +120,7 @@ def train_model(model,dataloaders,num_epochs=10,lr=0.0001,batch_size=8,patience 
     if(patience ==None):
         torch.save(model,'./model.h5')
     if(perform_test == True):
-        true,pred,image,true_wrong,pred_wrong = test(model,dataloaders['test'],device)
+        true,pred,image,true_wrong,pred_wrong = test(model,dataloaders['test'],device,batch_size)
         wrong_plot(12,true_wrong,image,pred_wrong,encoder,inv_normalize)
         performance_matrix(true,pred)
         if(classes !=None):
