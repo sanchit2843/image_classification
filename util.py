@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import random
-
+from PIL import Image
+import numpy as np
 
 def prediction_bar(output,encoder):
     output = output.cpu().detach().numpy()
@@ -26,6 +27,7 @@ def img_plot(image,inv_normalize = None):
         image = inv_normalize(image)
     image = image.cpu().numpy().transpose(1,2,0)
     plt.imshow(image)
+    plt.show()
 #plotting rondom images from dataset
 def class_plot(data , encoder ,inv_normalize = None,n_figures = 12):
     n_row = int(n_figures/3)

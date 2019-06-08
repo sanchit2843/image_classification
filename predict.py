@@ -3,13 +3,14 @@ from torch.autograd import Variable
 from torchvision import transforms
 from utils import img_plot
 
-def predict(image,device,encoder,tranforms = None,inv_normalize = None):
-    model = torch.load('./model.h5')
-    image = torch.from_numpy(np.expand_dims(image,axis = 0))
+def predict(model,image,device,encoder,transforms = None,inv_normalize = None):
+    #model = torch.load('./model.h5')
     model.eval()
-    data = Variable(image)
-    if(transforms):
-        data = transforms(data)
+    if(isinstance(image,np.ndarray)):
+      image = Image.fromarray(image)
+    if(transforms!=None):
+        image = transforms(image)
+    data = image.expand(1,-1,-1,-1)
     data = data.type(torch.FloatTensor).to(device)
     sm = nn.Softmax(dim = 1)
     output = model(data)
@@ -17,3 +18,4 @@ def predict(image,device,encoder,tranforms = None,inv_normalize = None):
     _, preds = torch.max(output, 1)
     img_plot(image,inv_normalize)
     prediction_bar(output,encoder)
+    return preds
