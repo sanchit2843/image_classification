@@ -103,8 +103,9 @@ def test(model,dataloader,device,batch_size):
     print(epoch_acc,epoch_loss)
     return true,pred,image,true_wrong,pred_wrong
 
-def train_model(model,dataloaders,encoder,inv_normalize = None,num_epochs=10,lr=0.0001,batch_size=8,patience = None,classes = None,device = 'cpu'):
+def train_model(model,dataloaders,encoder,inv_normalize = None,num_epochs=10,lr=0.0001,batch_size=8,patience = None,classes = None):
     dataloader_train = {}
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     losses = list()
     accuracy = list()
     key = dataloaders.keys()
@@ -117,8 +118,7 @@ def train_model(model,dataloaders,encoder,inv_normalize = None,num_epochs=10,lr=
     losses,accuracy = train(model,dataloader_train,device,num_epochs,lr,batch_size,patience)
     error_plot(losses)
     acc_plot(accuracy)
-    if(patience ==None):
-        torch.save(model,'./model.h5')
+    torch.save(model,'./model.h5')
     if(perform_test == True):
         true,pred,image,true_wrong,pred_wrong = test(model,dataloaders['test'],device,batch_size)
         wrong_plot(12,true_wrong,image,pred_wrong,encoder,inv_normalize)
