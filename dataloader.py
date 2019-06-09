@@ -10,13 +10,19 @@ from torch.utils.data.sampler import SubsetRandomSampler
 from util import class_plot
 #data loader
 
-def data_loader(train_data,encoder,test_data = None , valid_size = None,test_size = None , batch_size = 32,inv_normalize = None):
+def data_loader(train_data,encoder,test_data = None,valid_data = None , valid_size = None,test_size = None , batch_size = 32,inv_normalize = None):
     class_plot(train_data,encoder,inv_normalize)
-    if(test_data == None and valid_size == None):
+    if(test_data == None and valid_size == None and valid_data == None and test_size = None):
         train_loader =  DataLoader(train_data, batch_size = batch_size , shuffle = True)
         dataloaders = {'train':train_loader}
         return dataloaders
-    if(test_data == None and valid_size!=None):
+    if(test_data !=None and valid_size==None and valid_data == None):
+        test_loader = DataLoader(test_data, batch_size= batch_size,shuffle = True)
+        train_loader =  DataLoader(train_data, batch_size = batch_size , shuffle = True)
+
+        dataloaders = {'train':train_loader,'test':test_loader}
+
+    if(test_data == None and valid_size!=None and valid_data = None):
         if(test_size==None):
             indices = list(range(data_len))
             np.random.shuffle(indices)
@@ -53,6 +59,13 @@ def data_loader(train_data,encoder,test_data = None , valid_size = None,test_siz
         test_sampler = SubsetRandomSampler(test_idx)
         valid_loader = DataLoader(test_data, batch_size= batch_size, sampler=valid_sampler)
         test_loader = DataLoader(test_data, batch_size= batch_size, sampler=test_sampler)
+        train_loader =  DataLoader(train_data, batch_size = batch_size , shuffle = True)
+
+        dataloaders = {'train':train_loader,'val':valid_loader,'test':test_loader}
+        return dataloaders
+    if(test_data!=None and valid_data !=None):
+        valid_loader = DataLoader(valid_data, batch_size= batch_size,shuffle  = True)
+        test_loader = DataLoader(test_data, batch_size= batch_size,shuffle = True)
         train_loader =  DataLoader(train_data, batch_size = batch_size , shuffle = True)
 
         dataloaders = {'train':train_loader,'val':valid_loader,'test':test_loader}
