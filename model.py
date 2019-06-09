@@ -89,7 +89,8 @@ def classifier(model,n_classes,device = 'cpu',pretrained = True):
     model.to(device)
     return model
 #find best learning rate
-def lr_finder(model,train_loader,device):
+def lr_finder(model,train_loader):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     criterion = nn.CrossEntropyLoss()
     optimizer_ft = optim.Adam(model.parameters(), lr=0.0000001)
     lr_finder = LRFinder(model, optimizer_ft, criterion, device=device)

@@ -20,6 +20,8 @@ def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
     for epoch in range(num_epochs):
         print('Epoch:',epoch)
         optimizer = optim.Adam(model.parameters(), lr=lr)
+        lr = lr*0.85
+        
         for phase in phase1:
             if phase == ' train':
                 model.train()
