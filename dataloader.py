@@ -12,7 +12,7 @@ from util import class_plot
 
 def data_loader(train_data,encoder,test_data = None,valid_data = None , valid_size = None,test_size = None , batch_size = 32,inv_normalize = None):
     class_plot(train_data,encoder,inv_normalize)
-    if(test_data == None and valid_size == None and valid_data == None and test_size = None):
+    if(test_data == None and valid_size == None and valid_data == None and test_size == None):
         train_loader =  DataLoader(train_data, batch_size = batch_size , shuffle = True)
         dataloaders = {'train':train_loader}
         return dataloaders
@@ -22,7 +22,7 @@ def data_loader(train_data,encoder,test_data = None,valid_data = None , valid_si
 
         dataloaders = {'train':train_loader,'test':test_loader}
 
-    if(test_data == None and valid_size!=None and valid_data = None):
+    if(test_data == None and valid_size!=None and valid_data == None):
         if(test_size==None):
             indices = list(range(data_len))
             np.random.shuffle(indices)
