@@ -21,7 +21,7 @@ def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
         print('Epoch:',epoch)
         optimizer = optim.Adam(model.parameters(), lr=lr)
         lr = lr*0.85
-        
+
         for phase in phase1:
             if phase == ' train':
                 model.train()
@@ -105,7 +105,7 @@ def test(model,dataloader,device,batch_size):
     print(epoch_acc,epoch_loss)
     return true,pred,image,true_wrong,pred_wrong
 
-def train_model(model,dataloaders,encoder,inv_normalize = None,num_epochs=10,lr=0.0001,batch_size=8,patience = None,classes = None):
+def train_model(model,dataloaders,encoder,lr_scheduler = None,inv_normalize = None,num_epochs=10,lr=0.0001,batch_size=8,patience = None,classes = None):
     dataloader_train = {}
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     losses = list()
