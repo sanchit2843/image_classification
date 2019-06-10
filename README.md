@@ -6,3 +6,4 @@ Almost any image classification task in pytorch
 - [ ] Learning rate scheduler
 - [ ] Tensorboard
 - [ ] Number of elements in each class plot
+- [ ] Change print function
