@@ -11,11 +11,17 @@ from util import class_plot
 #data loader
 
 def data_loader(train_data,encoder,test_data = None,valid_data = None , valid_size = None,test_size = None , batch_size = 32,inv_normalize = None):
-    class_plot(train_data,encoder,inv_normalize)
+    #class_plot(train_data,encoder,inv_normalize)
     if(test_data == None and valid_size == None and valid_data == None and test_size == None):
         train_loader =  DataLoader(train_data, batch_size = batch_size , shuffle = True)
         dataloaders = {'train':train_loader}
         return dataloaders
+    if(test_data == None and valid_size == None and valid_data != None and test_size == None):
+        train_loader =  DataLoader(train_data, batch_size = batch_size , shuffle = True)
+        valid_loader = DataLoader(valid_data,batch_size = batch_size,shuffle = True)
+        dataloaders = {'train':train_loader,'val':valid_loader}
+        return dataloaders
+
     if(test_data !=None and valid_size==None and valid_data == None):
         test_loader = DataLoader(test_data, batch_size= batch_size,shuffle = True)
         train_loader =  DataLoader(train_data, batch_size = batch_size , shuffle = True)
@@ -24,6 +30,7 @@ def data_loader(train_data,encoder,test_data = None,valid_data = None , valid_si
 
     if(test_data == None and valid_size!=None and valid_data == None):
         if(test_size==None):
+            data_len = len(train_data)
             indices = list(range(data_len))
             np.random.shuffle(indices)
             split1 = int(np.floor(valid_size * data_len))
@@ -35,7 +42,7 @@ def data_loader(train_data,encoder,test_data = None,valid_data = None , valid_si
             dataloaders = {'train':train_loader,'val':valid_loader}
             return dataloaders
         if(test_size !=None):
-            data_len = len(test_data)
+            data_len = len(train_data)
             indices = list(range(data_len))
             np.random.shuffle(indices)
             split1 = int(np.floor(valid_size * data_len))
@@ -70,7 +77,6 @@ def data_loader(train_data,encoder,test_data = None,valid_data = None , valid_si
 
         dataloaders = {'train':train_loader,'val':valid_loader,'test':test_loader}
         return dataloaders
-
 #To calculate mean and standard deviation of the dataset
 #uncomment to calculate mean of dataset and replace in normalize transform
 def normalization_parameter(dataloader):

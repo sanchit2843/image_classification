@@ -7,6 +7,7 @@ import torch
 from util import *
 from Earlystopping import EarlyStopping
 from torch import nn
+import sys
 
 def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
     best_acc = 0.0
@@ -21,37 +22,44 @@ def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
         print('Epoch:',epoch)
         optimizer = optim.Adam(model.parameters(), lr=lr)
         lr = lr*0.85
+        epoch_metrics = {"loss": [], "acc": []}
 
         for phase in phase1:
             if phase == ' train':
                 model.train()
             else:
                 model.eval()
-            running_loss = 0.0
-            running_corrects = 0
-            total = 0
-            j = 0
             for  batch_idx, (data, target) in enumerate(dataloaders[phase]):
                 data, target = Variable(data), Variable(target)
                 data = data.type(torch.FloatTensor).to(device)
                 target = target.type(torch.LongTensor).to(device)
-
                 optimizer.zero_grad()
                 output = model(data)
                 loss = criterion(output, target)
-                _, preds = torch.max(output, 1)
-                running_corrects = running_corrects + torch.sum(preds == target.data)
+                acc = 100 * (output.detach().argmax(1) == target).cpu().numpy().mean()
+                epoch_metrics["loss"].append(loss.item())
+                epoch_metrics["acc"].append(acc)
                 running_loss += loss.item() * data.size(0)
-                j = j+1
+                sys.stdout.write(
+                "\r[Epoch %d/%d] [Batch %d/%d] [Loss: %f (%f), Acc: %.2f%% (%.2f%%)]"
+                % (
+                    epoch,
+                    num_epochs,
+                    batch_idx,
+                    len(dataloaders[phase]),
+                    loss.item(),
+                    np.mean(epoch_metrics["loss"]),
+                    acc,
+                    np.mean(epoch_metrics["acc"]),
+                    )
+                )
+
                 if(phase =='train'):
                     loss.backward()
                     optimizer.step()
-
-                if batch_idx % 100 == 0:
-                    print('{} Epoch: {}  [{}/{} ({:.0f}%)]\tLoss: {:.6f} \tAcc: {:.6f}'.format(phase,epoch, batch_idx * len(data), len(dataloaders[phase].dataset),100. * batch_idx / len(dataloaders[phase])
-                                                                                                 , running_loss/(j*batch_size),running_corrects.double()/(j*batch_size)))
-            epoch_acc = running_corrects.double()/(len(dataloaders[phase])*batch_size)
-            epoch_loss = running_loss/(len(dataloaders[phase])*batch_size)
+            epoch_acc = np.mean(epoch_metrics["acc"])
+            epoch_loss = np.mean(epoch_metrics["loss"])
+                
             if(phase == 'val'):
                 earlystop(epoch_loss,model)
             if(phase == 'train'):
