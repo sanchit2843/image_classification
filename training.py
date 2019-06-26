@@ -15,7 +15,7 @@ def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
     phase1 = dataloaders.keys()
     losses = list()
     criterion = nn.CrossEntropyLoss()
-    acc = list()
+    acc_all = list()
     train_loader = dataloaders['train']
     onecyc = OneCycle(len(train_loader)*num_epochs,lr)
     if(patience!=None):
@@ -68,7 +68,7 @@ def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
                 earlystop(epoch_loss,model)
             if(phase == 'train'):
                 losses.append(epoch_loss)
-                acc.append(epoch_acc)
+                acc_all.append(epoch_acc)
         if(earlystop.early_stop):
             print("Early stopping")
             model.load_state_dict(torch.load('./checkpoint.pt'))
