@@ -40,7 +40,6 @@ def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
                 acc = 100 * (output.detach().argmax(1) == target).cpu().numpy().mean()
                 epoch_metrics["loss"].append(loss.item())
                 epoch_metrics["acc"].append(acc)
-                running_loss += loss.item() * data.size(0)
                 lr,mom = onecyc.calc()
                 update_lr(optimizer, lr)
                 update_mom(optimizer, mom)
