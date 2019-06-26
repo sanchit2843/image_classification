@@ -64,7 +64,7 @@ def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
             epoch_acc = np.mean(epoch_metrics["acc"])
             epoch_loss = np.mean(epoch_metrics["loss"])
 
-            if(phase == 'val'):
+            if(phase == 'val' and patience !=None):
                 earlystop(epoch_loss,model)
             if(phase == 'train'):
                 losses.append(epoch_loss)
