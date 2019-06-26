@@ -35,6 +35,7 @@ def img_plot(image,inv_normalize = None):
     plt.show()
 #plotting rondom images from dataset
 def class_plot(data , encoder ,inv_normalize = None,n_figures = 12):
+    print('Printing random data from dataset')
     n_row = int(n_figures/3)
     fig,axes = plt.subplots(figsize=(14, 10), nrows = n_row, ncols=3)
     for ax in axes.flatten():
