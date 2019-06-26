@@ -8,14 +8,15 @@ from util import *
 from Earlystopping import EarlyStopping
 from torch import nn
 import sys
-
+from onecycle import OneCycle
 def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
-    best_acc = 0.0
     i = 0
     phase1 = dataloaders.keys()
     losses = list()
     criterion = nn.CrossEntropyLoss()
     acc = list()
+    train_loader = dataloaders['train']
+    onecyc = OneCycle(len(train_loader)*num_epochs,lr)
     if(patience!=None):
         earlystop = EarlyStopping(patience = patience,verbose = True)
     for epoch in range(num_epochs):
@@ -40,6 +41,9 @@ def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
                 epoch_metrics["loss"].append(loss.item())
                 epoch_metrics["acc"].append(acc)
                 running_loss += loss.item() * data.size(0)
+                lr,mom = onecyc.calc()
+                update_lr(optimizer, lr)
+                update_mom(optimizer, mom)
                 sys.stdout.write(
                 "\r[Epoch %d/%d] [Batch %d/%d] [Loss: %f (%f), Acc: %.2f%% (%.2f%%)]"
                 % (
@@ -59,7 +63,7 @@ def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
                     optimizer.step()
             epoch_acc = np.mean(epoch_metrics["acc"])
             epoch_loss = np.mean(epoch_metrics["loss"])
-                
+
             if(phase == 'val'):
                 earlystop(epoch_loss,model)
             if(phase == 'train'):
