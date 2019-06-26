@@ -66,14 +66,15 @@ def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
 
             if(phase == 'val' and patience !=None):
                 earlystop(epoch_loss,model)
+                if(earlystop.early_stop):
+                    print("Early stopping")
+                    model.load_state_dict(torch.load('./checkpoint.pt'))
+                    print('{} Accuracy: {}'.format(phase,epoch_acc.item()))
+                    break
             if(phase == 'train'):
                 losses.append(epoch_loss)
                 acc_all.append(epoch_acc)
-        if(earlystop.early_stop):
-            print("Early stopping")
-            model.load_state_dict(torch.load('./checkpoint.pt'))
-            print('{} Accuracy: {}'.format(phase,epoch_acc.item()))
-            break
+
         print('{} Accuracy: {}'.format(phase,epoch_acc.item()))
     return losses,acc
 def test(model,dataloader,device,batch_size):
