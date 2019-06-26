@@ -9,6 +9,7 @@ from Earlystopping import EarlyStopping
 from torch import nn
 import sys
 from onecycle import OneCycle
+from onecycle import update_lr,update_mom
 def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
     i = 0
     phase1 = dataloaders.keys()
