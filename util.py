@@ -169,8 +169,9 @@ def preprocess(path):
   img = test_transforms(img)
   img = img.unsqueeze(0)
   return img
-def cmap(model,path):
+def cam(model,path,encoder):
   img = preprocess(path)
+  model.eval()
   fmap,logits = model(img.to('cuda'))
   params = list(model.parameters())
   weight_softmax = model.linear.weight.detach().cpu().numpy()
@@ -192,4 +193,4 @@ def cmap(model,path):
   result1 = cv2.merge((b,g,r))
   plt.imshow(result1)
   plt.show()
-  
+  print('predicted class is:',encoder[idx])
