@@ -150,16 +150,20 @@ def acc_plot(acc):
     plt.ylabel("accuracy")
     plt.show()
 
-def im_convert(tensor,inv_normalize):
+sm = nn.Softmax()
+
+def im_convert(tensor):
     """ Display a tensor as an image. """
     image = tensor.to("cpu").clone().detach()
     image = image.squeeze()
     image = inv_normalize(image)
     image= image.numpy()
     image = image.transpose(1,2,0)
+
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     image = image.clip(0, 1)
     return image
-def preprocess(path,test_transforms):
+def preprocess(path):
   img = cv2.imread(path)
   img = test_transforms(img)
   img = img.unsqueeze(0)
@@ -180,10 +184,11 @@ def cmap(model,path):
   out = cv2.resize(cam_img, (im_size,im_size))
   heatmap = cv2.applyColorMap(out, cv2.COLORMAP_JET)
   img = im_convert(img)
-  result = heatmap * 0.3 + img * 0.5
-  cv2.imwrite('/content/1.jpg',result)
-  print(encoder[idx])
-  plt.imshow(img,alpha = 0.8)
-  plt.imshow(out,cmap = 'jet',alpha = 0.5)
+  result = heatmap * 0.5 + img*0.8*255
+  cv2.imwrite('/content/1.png',result)
+  result1 = heatmap * 0.5/255 + img*0.8
+  r,g,b = cv2.split(result1)
+  result1 = cv2.merge((b,g,r))
+  plt.imshow(result1)
   plt.show()
-  plt.savefig("/content/cmap.png")
+  
