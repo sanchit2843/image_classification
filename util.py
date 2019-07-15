@@ -153,7 +153,7 @@ def acc_plot(acc):
 
 sm = nn.Softmax()
 
-def im_convert(tensor):
+def im_convert(tensor,inv_normalize):
     """ Display a tensor as an image. """
     image = tensor.to("cpu").clone().detach()
     image = image.squeeze()
@@ -169,7 +169,8 @@ def preprocess(path,test_transforms):
   img = test_transforms(img)
   img = img.unsqueeze(0)
   return img
-def cam(model,path,encoder,test_transforms):
+
+def cam(model,path,encoder,test_transforms,inv_normalize):
   img = preprocess(path,test_transforms)
   model.eval()
   fmap,logits = model(img.to('cuda'))
@@ -183,9 +184,11 @@ def cam(model,path,encoder,test_transforms):
   cam = cam - np.min(cam)
   cam_img = cam / np.max(cam)
   cam_img = np.uint8(255*cam_img)
-  out = cv2.resize(cam_img, (im_size,im_size))
+  img = im_convert(img,inv_normalize)
+  h,w,c = img.shape
+  out = cv2.resize(cam_img, (h,w))
   heatmap = cv2.applyColorMap(out, cv2.COLORMAP_JET)
-  img = im_convert(img)
+  
   result = heatmap * 0.5 + img*0.8*255
   cv2.imwrite('/content/1.png',result)
   result1 = heatmap * 0.5/255 + img*0.8
