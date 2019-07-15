@@ -38,7 +38,7 @@ def data_loader(train_data,encoder,test_data = None,valid_data = None , valid_si
             valid_sampler = SubsetRandomSampler(valid_idx)
             train_sampler = SubsetRandomSampler(train_idx)
             valid_loader = DataLoader(train_data, batch_size= batch_size, sampler=valid_sampler)
-            train_loader =  DataLoader(train_data, batch_size = batch_size , sampler=valid_sampler)
+            train_loader =  DataLoader(train_data, batch_size = batch_size , sampler=train_sampler)
             dataloaders = {'train':train_loader,'val':valid_loader}
             return dataloaders
         if(test_size !=None):
@@ -53,7 +53,7 @@ def data_loader(train_data,encoder,test_data = None,valid_data = None , valid_si
             train_sampler = SubsetRandomSampler(train_idx)
             valid_loader = DataLoader(test_data, batch_size= batch_size, sampler=valid_sampler)
             test_loader = DataLoader(test_data, batch_size= batch_size, sampler=test_sampler)
-            train_loader =  DataLoader(train_data, batch_size = batch_size , sampler=valid_sampler)
+            train_loader =  DataLoader(train_data, batch_size = batch_size , sampler=train_sampler)
             dataloaders = {'train':train_loader,'val':valid_loader,'test':test_loader}
             return dataloaders
     if(test_data != None and valid_size!=None):
