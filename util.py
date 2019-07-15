@@ -169,7 +169,7 @@ def preprocess(path):
   img = test_transforms(img)
   img = img.unsqueeze(0)
   return img
-def cam(model,path,encoder):
+def cam(model,path,encoder,test_transform):
   img = preprocess(path)
   model.eval()
   fmap,logits = model(img.to('cuda'))
