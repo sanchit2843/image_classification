@@ -164,13 +164,13 @@ def im_convert(tensor):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     image = image.clip(0, 1)
     return image
-def preprocess(path):
+def preprocess(path,test_transforms):
   img = cv2.imread(path)
   img = test_transforms(img)
   img = img.unsqueeze(0)
   return img
 def cam(model,path,encoder,test_transform):
-  img = preprocess(path)
+  img = preprocess(path,test_transforms)
   model.eval()
   fmap,logits = model(img.to('cuda'))
   params = list(model.parameters())
