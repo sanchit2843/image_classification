@@ -76,7 +76,7 @@ def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
                 acc_all.append(epoch_acc)
 
         print('{} Accuracy: {}'.format(phase,epoch_acc.item()))
-    return losses,acc
+    return losses,acc_all
 def test(model,dataloader,device,batch_size):
     running_corrects = 0
     running_loss=0
