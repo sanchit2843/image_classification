@@ -1,4 +1,6 @@
-import torch.optim as optim
+import os
+os.system('pip install adabound')
+import adabound
 import matplotlib.pyplot as plt
 import random
 from torch.autograd import Variable
@@ -22,8 +24,8 @@ def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
         earlystop = EarlyStopping(patience = patience,verbose = True)
     for epoch in range(num_epochs):
         print('Epoch:',epoch)
-        optimizer = optim.Adam(model.parameters(), lr=lr)
-        lr = lr*0.85
+        optimizer = adabound.Adabound(model.parameters(), lr=lr, weight_decay = 1e-3)
+        lr = lr*0.9
         epoch_metrics = {"loss": [], "acc": []}
 
         for phase in phase1:
