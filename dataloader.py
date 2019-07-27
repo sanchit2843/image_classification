@@ -77,6 +77,11 @@ def data_loader(train_data,encoder,test_data = None,valid_data = None , valid_si
 
         dataloaders = {'train':train_loader,'val':valid_loader,'test':test_loader}
         return dataloaders
+    if(test_data!=None and valid_data ==None and valid_size == None):
+        test_loader = DataLoader(test_data, batch_size= batch_size,shuffle = True)
+        train_loader =  DataLoader(train_data, batch_size = batch_size , shuffle = True)
+        dataloaders = {'train':train_loader,'test':test_loader}
+        return dataloaders
 #To calculate mean and standard deviation of the dataset
 #uncomment to calculate mean of dataset and replace in normalize transform
 def normalization_parameter(dataloader):
