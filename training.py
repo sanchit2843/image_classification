@@ -24,7 +24,7 @@ def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
         earlystop = EarlyStopping(patience = patience,verbose = True)
     for epoch in range(num_epochs):
         print('Epoch:',epoch)
-        optimizer = adabound.Adabound(model.parameters(), lr=lr, weight_decay = 1e-3)
+        optimizer = adabound.AdaBound(model.parameters(), lr=lr, weight_decay = 1e-3)
         lr = lr*0.9
         epoch_metrics = {"loss": [], "acc": []}
 
