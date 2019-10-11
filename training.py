@@ -12,6 +12,12 @@ from torch import nn
 import sys
 from onecycle import OneCycle
 from onecycle import update_lr,update_mom
+import torch
+from torch.autograd import Variable
+import time
+import os
+import sys
+
 def train_epoch(epoch, data_loader, model, criterion, optimizer, epoch_logger, batch_logger):
     print('train at epoch {}'.format(epoch))
     model.train()
@@ -37,11 +43,12 @@ def train_epoch(epoch, data_loader, model, criterion, optimizer, epoch_logger, b
         acc = calculate_accuracy(outputs, targets)
         losses.update(loss.item(), inputs.size(0))
         accuracies.update(acc, inputs.size(0))
-
+        lr,_ = onecyc.calc()
+        update_lr(optimizer, lr)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-
+        
         batch_time.update(time.time() - end_time)
         end_time = time.time()
 
