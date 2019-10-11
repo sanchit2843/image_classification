@@ -12,6 +12,79 @@ from torch import nn
 import sys
 from onecycle import OneCycle
 from onecycle import update_lr,update_mom
+def train_epoch(epoch, data_loader, model, criterion, optimizer, epoch_logger, batch_logger):
+    print('train at epoch {}'.format(epoch))
+    model.train()
+    batch_time = AverageMeter()
+    data_time = AverageMeter()
+    losses = AverageMeter()
+    accuracies = AverageMeter()
+    end_time = time.time()
+    for i, (inputs, targets) in enumerate(data_loader):
+        data_time.update(time.time() - end_time)
+        if(inputs.size(0)<8):
+            continue
+        if torch.cuda.is_available():
+            targets = targets.cuda()
+                
+        inputs = Variable(inputs)
+        with torch.no_grad():
+            inputs = inputs.reshape(-1,3,im_size,im_size)
+        
+        targets = Variable(targets)
+        outputs = model(inputs)
+        loss = criterion(outputs, targets)
+        acc = calculate_accuracy(outputs, targets)
+        losses.update(loss.item(), inputs.size(0))
+        accuracies.update(acc, inputs.size(0))
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        batch_time.update(time.time() - end_time)
+        end_time = time.time()
+
+        batch_logger.log({
+            'epoch': epoch,
+            'batch': i + 1,
+            'iter': (epoch - 1) * len(data_loader) + (i + 1),
+            'loss': losses.val,
+            'acc': accuracies.val,
+            'lr': optimizer.param_groups[0]['lr']
+        })
+        sys.stdout.write(
+                "\r[Epoch %d/%d] [Batch %d / %d] [Time %.2f %.2f] [Data %.2f %.2f] [Loss: %f, Acc: %.2f%%]"
+                % (
+                    epoch,
+                    num_epochs,
+                    i,
+                    len(data_loader),
+                    batch_time.val,
+                    batch_time.avg,
+                    data_time.val,
+                    data_time.avg,
+                    losses.avg,
+                    accuracies.avg
+                    )
+                )
+    epoch_logger.log({
+        'epoch': epoch,
+        'loss': losses.avg,
+        'acc': accuracies.avg,
+        'lr': optimizer.param_groups[0]['lr']
+    })
+
+    save_file_path = os.path.join(result_path,
+                                  'save_{}.pth'.format(arch))
+    states = {
+        'epoch': epoch + 1,
+        'arch': arch,
+        'state_dict': model.state_dict(),
+        'optimizer': optimizer.state_dict(),
+    }
+    torch.save(states, save_file_path)
+
 def train(model,dataloaders,device,num_epochs,lr,batch_size,patience):
     i = 0
     phase1 = dataloaders.keys()
